@@ -1,14 +1,17 @@
-# Required pre-processors for program validity
 import random
 import time
 from vigilant_tracker_sensor import UltrasonicSensor, CameraSensor, RadarSensor, TemperatureSensor, SpeedSensor
 from loading_animation import loadingAnimation
 
-# COMMON ATTRIBUTES OF SENSORS: System Health, Sensor ID, & Sensor Status
-# UNIQUE ATTRIBUTES OF TEMP/SPEED SENSORS: Current Temperature & Current Speed
-
-# Displays the current sensor reading array (updated)
 def displayArray(sensorArray, status, metricSwitched):
+    """
+    Displays formatted sensor data in a table-like structure with color-coded health indicators.
+
+    Args:
+        sensorArray (list): Array of sensor objects containing ID, health, temperature, and speed data
+        status (str): Current vehicle status (e.g., "Active", "IDLE")
+        metricSwitched (bool): True for metric units (C, KP/H), False for imperial (F, MP/H)
+    """
     print("\nSensor ID:", end=" ")
     for i in range(len(sensorArray)):
         print(f"| {GREEN}{sensorArray[i].sensorID}", end=f"{RESET} |  ")
@@ -64,8 +67,17 @@ def displayArray(sensorArray, status, metricSwitched):
             print("|   N/A", end="   |  ")
     print()
 
-# Updates the current sensor reading array to make live changes to Health, Temperature, Speed, & Status logistically
 def updateArray(sensorArray, count):
+    """
+    Updates sensor health, temperature, and speed values with random variations to simulate real-time changes.
+
+    Args:
+        sensorArray (list): Array of sensor objects to update
+        count (int): Counter tracking number of critical sensors (health < 5%)
+
+    Returns:
+        int: Updated count of critical sensors, or 0 if none are critical
+    """
     if(not check and sensorArray[4].currentSpeed >= 20):
         sensorArray[4].setSpeed(0)
     if(not check and sensorArray[3].currentTemp < 90):
@@ -104,27 +116,53 @@ def updateArray(sensorArray, count):
             sensorArray[4].setSpeed(sensorArray[4].currentSpeed + random.randint(5, 15))
     return 0
 
-# ANSI escape sequences for terminal cursor control
 def move_cursor_up(lines):
+    """
+    Moves terminal cursor up by specified number of lines using ANSI escape codes.
+
+    Args:
+        lines (int): Number of lines to move cursor up
+    """
     print(f"\033[{lines}A", end='')
 
 def move_cursor_down(lines):
+    """
+    Moves terminal cursor down by specified number of lines using ANSI escape codes.
+
+    Args:
+        lines (int): Number of lines to move cursor down
+    """
     print(f"\033[{lines}B", end='')
 
-# Gives a delay gap between each iteration of sensor reading
 def delayFunc():
+    """
+    Pauses program execution for 1 second.
+    """
     time.sleep(1)
 
-# Capitalizes the first letter of each detail inputted about vehicle
 def fixFormat(userStr):
+    """
+    Capitalizes the first letter of each word in a string.
+
+    Args:
+        userStr (str): Input string to format
+
+    Returns:
+        str: Formatted string with each word capitalized
+    """
     newStr = list(userStr.capitalize())
     for r in range(1, len(newStr)):
         if(newStr[r - 1] == " "):
             newStr[r] = newStr[r].upper()
     return "".join(newStr)
 
-# Loading animation for visual effect
 def introOutroAnimation(status):
+    """
+    Displays an animated loading message for vehicle state transitions.
+
+    Args:
+        status (str): Vehicle status - "Active" for starting, any other value for stopping
+    """
     for seconds in range(0, 3):
         if(status == "Active"):
             print(f"\rStarting Vehicle to Motion{'.' * (seconds + 1)}   ", end = " ")
@@ -132,26 +170,62 @@ def introOutroAnimation(status):
             print(f"\rStopping Vehicle from Motion{'.' * (seconds + 1)}   ", end=" ")
         time.sleep(1)
 
-# Updates the average temperature
 def updateAveTemp(aveTemp):
+    """
+    Adds current temperature reading to cumulative average temperature.
+
+    Args:
+        aveTemp (float): Current cumulative temperature sum
+
+    Returns:
+        float: Updated cumulative temperature sum
+    """
     aveTemp += sensorArray[3].currentTemp
     return aveTemp
 
-# Updates the average speed
 def updateAveSpeed(aveSpeed):
+    """
+    Adds current speed reading to cumulative average speed.
+
+    Args:
+        aveSpeed (float): Current cumulative speed sum
+
+    Returns:
+        float: Updated cumulative speed sum
+    """
     aveSpeed += sensorArray[4].currentSpeed
     return aveSpeed
 
-# Converts F -> C in temperature
 def convertDegree(currentTemp):
+    """
+    Converts temperature from Fahrenheit to Celsius.
+
+    Args:
+        currentTemp (float): Temperature in Fahrenheit
+
+    Returns:
+        float: Temperature in Celsius
+    """
     return (currentTemp - 32) * (5/9)
 
-# Converts MP/H -> KP/H in speed
 def convertSpeed(currentSpeed):
+    """
+    Converts speed from miles per hour to kilometers per hour.
+
+    Args:
+        currentSpeed (float): Speed in MP/H
+
+    Returns:
+        float: Speed in KP/H
+    """
     return currentSpeed * 1.609
 
-# Variables
+# ========================================
+# GLOBAL VARIABLES
+# ========================================
 sensorArray = [UltrasonicSensor(), CameraSensor(), RadarSensor(), TemperatureSensor(), SpeedSensor()]
+
+# ANSI Color Codes for Terminal Output
 GREEN = "\033[32m"
 YELLOW = "\033[33m"
 RED = "\033[31m"
@@ -160,6 +234,8 @@ BG_YELLOW = "\033[43m"
 BLUE = "\033[34m"
 BOLD = "\033[1m"
 RESET = "\033[0m"
+
+# Program State Variables
 status = "Active"
 check = False
 criticalCount = 0
@@ -170,7 +246,9 @@ aveTemp = 0
 initialNum = 0
 metricSwitched = False
 
-# Introduction
+# ========================================
+# PROGRAM INTRODUCTION
+# ========================================
 print("\t\t\t\tVigilantTrack: Dynamic Vehicle Health Monitor\n")
 print("In this program, you will add one vehicle of your choice to do a sensor reading where you will see the sensor data live (as it is changing).")
 print("If all the sensor's health percent were to reach below 5%, the vehicle would stop immediately and give you the next steps.")
@@ -178,7 +256,10 @@ print("The vehicle would be in motion and active while the sensor reading is in 
 print("Simulation has been SCALED, meaning the health of the sensor goes down faster than in real-life for a quicker analysis and better gist.\n")
 print("Advanced Feature Overview:\n> Predictive Maintenance Module\n> Adaptive Sensor Calibration\n> Fault Tolerant Framework\n> Real-time Data Visualization\n> Sensor Fusion Algorithm\n")
 
-# Data inputting
+
+# ========================================
+# USER INPUT: VEHICLE DETAILS
+# ========================================
 make = fixFormat(input("Enter the make of the vehicle: "))
 model = fixFormat(input("Enter the model of the vehicle: "))
 electric = fixFormat(input(f"Is the {make} {model} electric (True/False): "))
@@ -197,13 +278,20 @@ while True:
         print("You entered string instead of numbers. Please enter the year again.\n")
         continue
 
-# Loading animation for visual effect
+# ========================================
+# DISPLAY VEHICLE DATA
+# ========================================
+
 loadingAnimation()
 
 # Vehicle detail printed in an arrowhead format
 print(f"\n\nVEHICLE DATA:\n\t\t\t[Vehicle Make: {make}]\n\n\t\t\t\t\t\t[Vehicle Model: {model}]\n\n\t\t\t\t\t\t\t\t\t[Electric: {electric}]\n\n\t\t\t\t\t\t[Vehicle Color: {color}]\n\n\t\t\t[Vehicle Year: {year}]\n\n")
 
-# Gather the time limit for sensor reading
+# ========================================
+# USER INPUT: SENSOR READING CONFIGURATION
+# ========================================
+
+# Get duration and metric performance
 while True:
     try:
         num = int(input("How long do you want the sensor reading to measure for in seconds (>0): "))
@@ -220,46 +308,73 @@ while True:
     except ValueError:
         print("Cannot input string instead of numbers. Try again\n")
 
+# ========================================
+# SENSOR MONITORING LOOP
+# ========================================
+
 introOutroAnimation(status)
 
-# Iterations of displaying and updating sensor data for num seconds
+# Display header
 print(f"\n\n{BLUE}{year} {make} {model} (before complete){RESET}:")
 print("\t   UltraSonic     Camera     Radar     Temperature     Speed")
-while(num > 0):
-    print(f"\r{BOLD}{BRIGHT_MAGENTA}{BG_YELLOW}{int(num / 60)} minute(s) and {num % 60} second(s) remain{RESET}", end=" ")
+
+# Real-time sensor monitoring
+while (num > 0):
+    # Display countdown timer
+    print(f"\r{BOLD}{BRIGHT_MAGENTA}{BG_YELLOW}{int(num / 60)} minute(s) and {num % 60} second(s) remain{RESET}",end=" ")
+    # Update sensor data
     updateArray(sensorArray, count)
     count = updateArray(sensorArray, count)
     aveTemp = updateAveTemp(aveTemp)
     aveSpeed = updateAveSpeed(aveSpeed)
-    if(count >= 5):
+    # Check if all sensors are critical
+    if (count >= 5):
         allSensorsDown = displayArray(sensorArray, status, metricSwitched)
         break
     else:
+        # Display current sensor readings
         displayArray(sensorArray, status, metricSwitched)
         check = True
         delayFunc()
         num -= 1
-        if(num != 0):
+        # Move cursor up for live animation effect
+        if (num != 0):
             move_cursor_up(10)
 
-# End statistics w/ after summary
+# ========================================
+# POST-MONITORING SUMMARY
+# ========================================
+
+# Normal completion (sensors still functional)
 if(count < 5):
     print("\n")
     status = "IDLE"
+
+    # Calculate averages
     aveTemp /= initialNum
     aveSpeed /= initialNum
+
+    # Stop vehicle animation
     introOutroAnimation(status)
     print("\n")
+
+    # Reset sensor values to idle state
     sensorArray[4].setSpeed(0)
     if(sensorArray[3].currentTemp >= 100):
         sensorArray[3].changeTemperature(sensorArray[3].currentTemp - random.randint(30, 60))
+
+    # Display final sensor state
     print(f"\n\n{BLUE}{year} {make} {model} (after complete){RESET}:")
     displayArray(sensorArray, status, metricSwitched)
+
+    # Count sensors by condition
     for u in range(len(sensorArray)):
         if(sensorArray[u].system_health < 5):
             criticalCount += 1
         elif(sensorArray[u].system_health >= 5 and sensorArray[u].system_health < 50):
             moderateCount += 1
+
+    # Display summary statistics
     print(f"\n\nAll sensor reading tests are complete for the {year} {make} {model}.")
     print(f"\n{BLUE}Conditions:{RESET}")
     print(f"* {criticalCount} sensor(s) in a critical condition (% < 5 [RED]).\n* {moderateCount} sensor(s) in a moderate condition (% >= 5 & < 50 [YELLOW]).\n* {5 - (criticalCount + moderateCount)} sensor(s) in a good condition (% >= 50 [GREEN])")
@@ -270,6 +385,8 @@ if(count < 5):
     else:
         print(f"* Ave Speed - {round(convertSpeed(aveSpeed), 2)} KP/H")
         print(f"* Ave Temperature - {round(convertDegree(aveTemp), 2)} C")
+
+# Critical failure (all sensors failed)
 elif(count >= 5):
     move_cursor_down(10)
     print(f"\nThe system health of all sensor's are critical. Replace the sensor's with new ones and then re-run for further sensor reading and safe utilization of the {year} {make} {model}.")
