@@ -1,11 +1,8 @@
 # Required pre-processors for program validity
-from logging import critical
-import MP2_VehicleSensor
-import MP2_Vehicle
 import random
 import time
-from MP2_VehicleSensor import UltrasonicSensor, CameraSensor, RadarSensor, TemperatureSensor, SpeedSensor
-from loadingModule import loadingAnimation
+from vigilant_tracker_sensor import UltrasonicSensor, CameraSensor, RadarSensor, TemperatureSensor, SpeedSensor
+from loading_animation import loadingAnimation
 
 # COMMON ATTRIBUTES OF SENSORS: System Health, Sensor ID, & Sensor Status
 # UNIQUE ATTRIBUTES OF TEMP/SPEED SENSORS: Current Temperature & Current Speed
@@ -130,9 +127,9 @@ def fixFormat(userStr):
 def introOutroAnimation(status):
     for seconds in range(0, 3):
         if(status == "Active"):
-            print(f"Starting Vehicle to Motion{'.' * (seconds + 1)}   ", end = " ")
+            print(f"\rStarting Vehicle to Motion{'.' * (seconds + 1)}   ", end = " ")
         else:
-            print(f"Stopping Vehicle from Motion{'.' * (seconds + 1)}   ", end=" ")
+            print(f"\rStopping Vehicle from Motion{'.' * (seconds + 1)}   ", end=" ")
         time.sleep(1)
 
 # Updates the average temperature
@@ -276,4 +273,3 @@ if(count < 5):
 elif(count >= 5):
     move_cursor_down(10)
     print(f"\nThe system health of all sensor's are critical. Replace the sensor's with new ones and then re-run for further sensor reading and safe utilization of the {year} {make} {model}.")
-
