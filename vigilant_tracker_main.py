@@ -67,7 +67,7 @@ def displayArray(sensorArray, status, metricSwitched):
             print("|   N/A", end="   |  ")
     print()
 
-def updateArray(sensorArray, count):
+def updateArray(sensorArray, count, initialTimer, currentTimer):
     """
     Updates sensor health, temperature, and speed values with random variations to simulate real-time changes.
 
@@ -82,6 +82,8 @@ def updateArray(sensorArray, count):
         sensorArray[4].setSpeed(0)
     if(not check and sensorArray[3].currentTemp < 90):
         sensorArray[3].changeTemperature(90)
+
+    # realistic runtime system health updater
     for e in range(len(sensorArray)):
         if(not check):
             sensorArray[e].fixSystemHealth()
@@ -94,15 +96,13 @@ def updateArray(sensorArray, count):
             if(count >= 5):
                 return count
     flip = random.randint(0, 1)
+
+    # temperature control (realistically random)
     if(flip == 0):
         if(sensorArray[3].currentTemp < 180):
             sensorArray[3].changeTemperature(sensorArray[3].currentTemp + random.randint(0, 2))
         else:
             sensorArray[3].changeTemperature(sensorArray[3].currentTemp / 2)
-        if(sensorArray[4].currentSpeed < 165):
-            sensorArray[4].setSpeed(sensorArray[4].currentSpeed + random.randint(0, 3))
-        else:
-            sensorArray[4].setSpeed(sensorArray[4].currentSpeed - random.randint(10, 25))
     else:
         if(sensorArray[3].currentTemp >= 15):
             krand = random.randint(0, 1)
@@ -110,10 +110,21 @@ def updateArray(sensorArray, count):
                 sensorArray[3].changeTemperature(sensorArray[3].currentTemp - random.randint(0, 2))
         else:
             sensorArray[3].changeTemperature(sensorArray[3].currentTemp + random.randint(60, 100))
-        if(sensorArray[4].currentSpeed >= 3):
+
+    # speed control (increases in the first half then decreases in the second half)
+    flip = 0 if (currentTimer < (initialTimer / 2)) else 1
+    if (currentTimer == 0): # the vehicle must start from 0 speed
+        sensorArray[4].setSpeed(0)
+    if (flip == 0):
+        if (sensorArray[4].currentSpeed >= 3):
             sensorArray[4].setSpeed(sensorArray[4].currentSpeed - random.randint(0, 3))
         else:
             sensorArray[4].setSpeed(sensorArray[4].currentSpeed + random.randint(5, 15))
+    else:
+        if (sensorArray[4].currentSpeed < 165):
+            sensorArray[4].setSpeed(sensorArray[4].currentSpeed + random.randint(0, 3))
+        else:
+            sensorArray[4].setSpeed(sensorArray[4].currentSpeed - random.randint(10, 25))
     return 0
 
 def move_cursor_up(lines):
@@ -220,6 +231,30 @@ def convertSpeed(currentSpeed):
     """
     return currentSpeed * 1.609
 
+def reprompt_for_errors(user_response):
+    """
+    Confirms user input and allows them to re-enter if incorrect.
+
+    Args:
+        user_choice (str): The original input from the user to confirm
+
+    Returns:
+        str: The confirmed or corrected user input
+    """
+    while True:
+        # Ask for confirmation
+        confirmation = input(f"You entered: '{user_response.capitalize()}'. Is this correct? (yes/no): ").lower().strip()
+
+        # Validate yes/no response
+        if confirmation == "yes" or confirmation == "y":
+            return user_response
+        elif confirmation == "no" or confirmation == "n":
+            # Ask user to re-enter
+            user_response = input("Please re-enter your response: ").strip()
+        else:
+            # Invalid response, ask again
+            print("Invalid input. Please enter 'yes' or 'no'.")
+
 # ========================================
 # GLOBAL VARIABLES
 # ========================================
@@ -261,13 +296,16 @@ print("Advanced Feature Overview:\n> Predictive Maintenance Module\n> Adaptive S
 # USER INPUT: VEHICLE DETAILS
 # ========================================
 make = fixFormat(input("Enter the make of the vehicle: "))
+make = reprompt_for_errors(make).capitalize()
 model = fixFormat(input("Enter the model of the vehicle: "))
+model = reprompt_for_errors(model).capitalize()
 electric = fixFormat(input(f"Is the {make} {model} electric (True/False): "))
 while(electric != "True" and electric != "False"):
     electric = fixFormat(input("Make sure to enter either True or False: "))
 color = fixFormat(input(f"What color is the {make} {model}: "))
 while(color.isdigit()):
     color = fixFormat(input("Please enter a valid color. A color cannot be expressed in numbers: "))
+color = reprompt_for_errors(color).capitalize()
 while True:
     try:
         year = int(input(f"What year is the {make} {model}: "))
@@ -281,7 +319,6 @@ while True:
 # ========================================
 # DISPLAY VEHICLE DATA
 # ========================================
-
 loadingAnimation()
 
 # Vehicle detail printed in an arrowhead format
@@ -290,14 +327,13 @@ print(f"\n\nVEHICLE DATA:\n\t\t\t[Vehicle Make: {make}]\n\n\t\t\t\t\t\t[Vehicle 
 # ========================================
 # USER INPUT: SENSOR READING CONFIGURATION
 # ========================================
-
 # Get duration and metric performance
 while True:
     try:
         num = int(input("How long do you want the sensor reading to measure for in seconds (>0): "))
         initialNum = num
-        while(num == 0):
-            num = int(input("Input must not be 0. Only seconds greater than 0 are accepted: "))
+        while(initialNum == 0):
+            initialNum = int(input("Input must not be 0. Only seconds greater than 0 are accepted: "))
         try:
             needMetric = (input("Type 'True' for metric convertion (KP/H, C) or press enter for default (MP/H, F): ")).lower()
             if(needMetric == "true"):
@@ -311,7 +347,6 @@ while True:
 # ========================================
 # SENSOR MONITORING LOOP
 # ========================================
-
 introOutroAnimation(status)
 
 # Display header
@@ -323,8 +358,8 @@ while (num > 0):
     # Display countdown timer
     print(f"\r{BOLD}{BRIGHT_MAGENTA}{BG_YELLOW}{int(num / 60)} minute(s) and {num % 60} second(s) remain{RESET}",end=" ")
     # Update sensor data
-    updateArray(sensorArray, count)
-    count = updateArray(sensorArray, count)
+    updateArray(sensorArray, count, initialNum, num)
+    count = updateArray(sensorArray, count, initialNum, num)
     aveTemp = updateAveTemp(aveTemp)
     aveSpeed = updateAveSpeed(aveSpeed)
     # Check if all sensors are critical
@@ -344,7 +379,6 @@ while (num > 0):
 # ========================================
 # POST-MONITORING SUMMARY
 # ========================================
-
 # Normal completion (sensors still functional)
 if(count < 5):
     print("\n")
