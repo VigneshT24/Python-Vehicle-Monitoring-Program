@@ -408,7 +408,7 @@ if(count < 5):
             moderateCount += 1
 
     # Display summary statistics
-    print(f"\n\nAll sensor reading tests are complete for the {year} {make} {model}.")
+    print(f"\n\nAll sensor reading tests are completed for the {year} {make} {model}.")
     print(f"\n{BLUE}Conditions:{RESET}")
     print(f"* {criticalCount} sensor(s) in a critical condition (% < 5 [RED]).\n* {moderateCount} sensor(s) in a moderate condition (% >= 5 & < 50 [YELLOW]).\n* {5 - (criticalCount + moderateCount)} sensor(s) in a good condition (% >= 50 [GREEN])")
     print(f"\n{BLUE}Averages:{RESET}")
