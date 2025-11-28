@@ -358,7 +358,6 @@ while (num > 0):
     # Display countdown timer
     print(f"\r{BOLD}{BRIGHT_MAGENTA}{BG_YELLOW}{int(num / 60)} minute(s) and {num % 60} second(s) remain{RESET}",end=" ")
     # Update sensor data
-    # updateArray(sensorArray, count, initialNum, num)
     count = updateArray(sensorArray, count, initialNum, num)
     aveTemp = updateAveTemp(aveTemp)
     aveSpeed = updateAveSpeed(aveSpeed)
