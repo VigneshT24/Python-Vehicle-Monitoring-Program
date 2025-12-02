@@ -236,14 +236,15 @@ def reprompt_for_errors(user_response):
     Confirms user input and allows them to re-enter if incorrect.
 
     Args:
-        user_choice (str): The original input from the user to confirm
+        user_response (str, int, or bool): The original input from the user to confirm
 
     Returns:
         str: The confirmed or corrected user input
     """
     while True:
         # Ask for confirmation
-        confirmation = input(f"You entered: '{user_response.capitalize()}'. Is this correct? (yes/no): ").lower().strip()
+        confirmation = input(f"You entered: '{user_response.capitalize() if isinstance(user_response, str) else user_response}'. "
+                             f"Is this correct? (yes/no): ").lower().strip()
 
         # Validate yes/no response
         if confirmation == "yes" or confirmation == "y":
@@ -302,6 +303,7 @@ model = reprompt_for_errors(model).capitalize()
 electric = fixFormat(input(f"Is the {make} {model} electric (True/False): "))
 while(electric != "True" and electric != "False"):
     electric = fixFormat(input("Make sure to enter either True or False: "))
+electric = reprompt_for_errors(electric)
 color = fixFormat(input(f"What color is the {make} {model}: "))
 while(color.isdigit()):
     color = fixFormat(input("Please enter a valid color. A color cannot be expressed in numbers: "))
@@ -311,6 +313,7 @@ while True:
         year = int(input(f"What year is the {make} {model}: "))
         while(year < 1880 or year > 2025):
             year = int(input(f"Please enter a valid year for {make} {model}: "))
+        year = reprompt_for_errors(year)
         break
     except ValueError:
         print("You entered string instead of numbers. Please enter the year again.\n")
