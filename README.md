@@ -26,7 +26,7 @@ Possible Implications: Can replace random sensor data with actual sensor data fr
  
 * Real-Time Visualization
     * Live terminal interface with ANSI escape code animations
-    * Dynamic data updates without screen flickering
+    * Dynamic data updates live every second
     * Color-coded health indicators (🟢 Green: Good, 🟡 Yellow: Moderate, 🔴 Red: Critical)
     * Countdown timer showing remaining monitoring duration
       
