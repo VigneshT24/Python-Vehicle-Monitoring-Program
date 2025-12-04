@@ -12,6 +12,11 @@ def displayArray(sensorArray, status, metricSwitched):
         status (str): Current vehicle status (e.g., "Active", "IDLE")
         metricSwitched (bool): True for metric units (C, KP/H), False for imperial (F, MP/H)
     """
+    # ANSI Color Codes for Terminal Output
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    RED = "\033[31m"
+
     print("\nSensor ID:", end=" ")
     for i in range(len(sensorArray)):
         print(f"| {GREEN}{sensorArray[i].sensorID}", end=f"{RESET} |  ")
@@ -118,8 +123,6 @@ def updateArray(sensorArray, count, initialTimer, currentTimer):
     if (flip == 0):
         if (sensorArray[4].currentSpeed >= 3):
             sensorArray[4].setSpeed(sensorArray[4].currentSpeed - random.randint(0, 3))
-        else:
-            sensorArray[4].setSpeed(sensorArray[4].currentSpeed + random.randint(5, 15))
     else:
         if (sensorArray[4].currentSpeed < 165):
             sensorArray[4].setSpeed(sensorArray[4].currentSpeed + random.randint(0, 3))
@@ -260,27 +263,12 @@ def reprompt_for_errors(user_response):
 # GLOBAL VARIABLES
 # ========================================
 sensorArray = [UltrasonicSensor(), CameraSensor(), RadarSensor(), TemperatureSensor(), SpeedSensor()]
-
-# ANSI Color Codes for Terminal Output
-GREEN = "\033[32m"
-YELLOW = "\033[33m"
-RED = "\033[31m"
+metricSwitched = False
 BRIGHT_MAGENTA = "\033[95m"
 BG_YELLOW = "\033[43m"
 BLUE = "\033[34m"
 BOLD = "\033[1m"
 RESET = "\033[0m"
-
-# Program State Variables
-status = "Active"
-check = False
-criticalCount = 0
-moderateCount = 0
-count = 0
-aveSpeed = 0
-aveTemp = 0
-initialNum = 0
-metricSwitched = False
 
 # ========================================
 # PROGRAM INTRODUCTION
@@ -311,7 +299,7 @@ color = reprompt_for_errors(color).capitalize()
 while True:
     try:
         year = int(input(f"What year is the {make} {model}: "))
-        while(year < 1880 or year > 2025):
+        while(year < 1880 or year > 2030):
             year = int(input(f"Please enter a valid year for {make} {model}: "))
         year = reprompt_for_errors(year)
         break
@@ -350,12 +338,16 @@ while True:
 # ========================================
 # SENSOR MONITORING LOOP
 # ========================================
+status = "Active"
 introOutroAnimation(status)
 
 # Display header
 print(f"\n\n{BLUE}{year} {make} {model} (before complete){RESET}:")
 print("\t   UltraSonic     Camera     Radar     Temperature     Speed")
 
+aveSpeed = aveTemp = 0
+check = False
+count = 0
 # Real-time sensor monitoring
 while (num > 0):
     # Display countdown timer
@@ -404,6 +396,8 @@ if(count < 5):
     displayArray(sensorArray, status, metricSwitched)
 
     # Count sensors by condition
+    criticalCount = 0
+    moderateCount = 0
     for u in range(len(sensorArray)):
         if(sensorArray[u].system_health < 5):
             criticalCount += 1
