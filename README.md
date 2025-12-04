@@ -3,7 +3,7 @@
 # VigilantTrack: Dynamic Vehicle Health Monitor
 
 ## Overview
-VigilantTrack is a comprehensive vehicle health monitoring simulation system designed to demonstrate real-time sensor data processing, predictive maintenance algorithms, and fault-tolerant system architecture. This project simulates the sensor monitoring systems found in modern vehicles, similar to OBD-II diagnostic platforms and advanced driver assistance systems (ADAS). Uses a bell-curve velocity pattern.
+VigilantTrack is a comprehensive vehicle health monitoring simulation system designed to demonstrate real-time sensor data processing, predictive maintenance algorithms, and fault-tolerant system architecture. This project simulates the sensor monitoring systems found in modern vehicles, similar to OBD-II diagnostic platforms and advanced driver assistance systems (ADAS). Uses a bell-curve velocity pattern and stochastic degradation modeling.
 
 **IMPORTANT NOTICE**: This is a SIMULATION program intended for educational and demonstration purposes only. It doesn't currently use data from actual sensors, although it can be added with minimal modification and extension. All sensor data are randomly generated to simulate real-world conditions.
 
